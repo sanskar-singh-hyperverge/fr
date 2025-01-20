@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
 import { Input, Button, HomeHero } from 'movie-design-hv';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignInPage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = () => {
-    console.log('Sign in with:', email, password);
+  const handleSignIn = async () => {
+    try {
+      const response = await axios.post("http://localhost:3005/api/auth/signin", {
+        email,
+        password
+      });
+  
+      if (response.status === 200) {
+        const {accessToken, user} = response.data;
+        localStorage.setItem('authToken', accessToken);
+        localStorage.setItem('userId', user.id)
+        navigate('/home');
+      }
+    } catch (error) {
+      console.error("Error during sign-in:");
+      alert("Failed to sign in. Please try again.");
+    }
   };
 
   const handleSignUp = () => {
@@ -33,7 +49,7 @@ const SignInPage: React.FC = () => {
           sign in
         </div>
 
-        <div className="relative flex flex-col items-center pt-64 mt-40">
+        <div className="relative flex flex-col items-center pt-64 mt-44">
           <div className="w-full space-y-6">
             <Input
               type="email"

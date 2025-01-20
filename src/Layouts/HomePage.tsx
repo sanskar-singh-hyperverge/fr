@@ -2,99 +2,107 @@ import React, { useEffect, useState } from 'react';
 import { Caraousel, CardSlider } from 'movie-design-hv';
 import { Home, Heart, Ticket, Bell, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getMoviesByStatus } from '../api/api';
 import axios from 'axios';
+
+interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  duration: number;
+  release_date: string;
+  poster_url: string;
+  trailer_url: string;
+  imdb_rating: number;
+  app_rating: number;
+  status: 'UPCOMING' | 'NOW_SHOWING' | 'HIGHLIGHTS';
+  created_at: string;
+  updated_at: string;
+}
+
+interface ApiResponse {
+  source: string;
+  data: Movie[];
+}
+
+interface CarouselSlide {
+  image: string;
+  title: string;
+  description: string;
+  onClick?: () => void;
+}
+
+interface CardData {
+  image: string;
+  title: string;
+  description: string;
+  card_id: string;
+}
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [highlighMovies, setHighlighMovies] = useState([]);
+  const [highlightMovies, setHighlightMovies] = useState<Movie[]>([]);
+  const [nowShowingMovies, setNowShowingMovies] = useState<Movie[]>([]);
+  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
 
-
-  const carouselSlides = [
-    {
-      image: "https://picsum.photos/300/400",
-      title: "Kung Fu Panda 4",
-      description: "The Dragon Warrior returns",
-      onclick: () => navigate('/movie_dets')
-    },
-    {
-      image: "https://picsum.photos/400/300",
-      title: "Godzilla X Kong",
-      description: "Two legends collide",
-      onclick: () => navigate('/index')
-    },
-    {
-      image: "https://picsum.photos/400/400",
-      title: "Godzilla X Kong",
-      description: "Two legends collide"
+  const fetchMoviesByStatus = async (status: string, limit = 3): Promise<Movie[]> => {
+    try {
+      const response = await axios.get<ApiResponse>(`http://localhost:3002/api/movies/status/${status}?page=1&limit=${limit}`);
+      return response.data.data;
+    } catch (error) {
+      console.error(`Error fetching ${status} movies:`, error);
+      return [];
     }
-  ];
+  };
 
-  const nowPlayingCards = [
-    {
-      image: "https://picsum.photos/100/400",
-      title: "Back to Black",
-      description: "Her music. Her life. Her terms.",
-      onclick: () => navigate('/index')
-    },
-    {
-      image: "https://picsum.photos/400/200",
-      title: "Challengers",
-      description: "Game. Set. Love.",
-      // onclick: () => navigate('/movie_dets')
-    },
-    {
-      image: "https://picsum.photos/200/300",
-      title: "Civil War",
-      description: "America divided",
-      onclick: () => navigate('/index')
-    }
-  ];
-
-  const comingSoonCards = [
-    {
-      image: "https://picsum.photos/400/300",
-      title: "Kingdom of the Planet of the Apes",
-      description: "A new reign begins"
-    },
-    {
-      image: "https://picsum.photos/400/400",
-      title: "IF",
-      description: "Imagine that"
-    },
-    {
-      image: "https://picsum.photos/300/400",
-      title: "The Fall Guy",
-      description: "From stuntman to hero"
-    }
-  ];
-
-  const handleCarouselClick = () => {
-    // navigate('/movie_dets');
-  }
+  const truncateText = (text: string): string => {
+    return text.length > 10 ? `${text.substring(0, 10)}...` : text;
+  };
 
   useEffect(() => {
-    const fetchMoviesHighlights = async () => {
-      try {
-        const response = await axios.get('http://localhost:3002/api/movies/status/UPCOMING');
-        console.log(response);
-        setHighlighMovies(response.data);
-        carouselSlides.map((obj) => {
-          
-        })
-        if (response.status === 200) {
-          console.log(response.data);
-        } else {
-          console.log("Failed to fetch movies");
-        }
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
+    const fetchAllMovies = async () => {
+      const highlights = await fetchMoviesByStatus('HIGHLIGHTS');
+      const nowShowing = await fetchMoviesByStatus('NOW_SHOWING');
+      const upcoming = await fetchMoviesByStatus('UPCOMING');
+      
+      setHighlightMovies(highlights);
+      setNowShowingMovies(nowShowing);
+      setUpcomingMovies(upcoming);
     };
-  
-    fetchMoviesHighlights(); // Correct way to call the function
-  
+
+    fetchAllMovies();
   }, []);
+
+  const handleMovieClick = (movieId: string) => {
+    navigate(`/movie/${movieId}`);
+  };
+
+  // Transform API data for carousel
+  const carouselSlides: CarouselSlide[] = highlightMovies.map(movie => ({
+    image: "/image_shifu.png", // Keep placeholder image
+    title: movie.title,
+    description: truncateText(movie.description),
+    onClick: () => handleMovieClick(movie.id)
+  }));
+
+  // Transform API data for now showing cards
+  const nowPlayingCards: CardData[] = nowShowingMovies.map(movie => ({
+    image: "/images.jpg", // Keep placeholder image
+    title: movie.title,
+    description: truncateText(movie.description),
+    card_id: movie.id
+  }));
+
+  // Transform API data for upcoming cards
+  const comingSoonCards: CardData[] = upcomingMovies.map(movie => ({
+    image: "https://picsum.photos/300/400", // Keep placeholder image
+    title: movie.title,
+    description: truncateText(movie.description),
+    card_id: movie.id
+  }));
+
+  const handleCardClick = (card_id: string) => {
+    navigate(`/movie/${card_id}`);
+  };
 
   return (
     <div className="w-full h-screen max-w-md mx-auto bg-black relative">
@@ -109,16 +117,12 @@ const HomePage = () => {
       <div className="pt-14 pb-20 h-full overflow-y-auto">
         <div className="px-4 mb-8">
           <h2 className="text-white text-xl font-semibold mb-3">Highlights</h2>
-          <div 
-            className="w-full aspect-[16/9] rounded-lg overflow-hidden"
-            // onClick={handleCarouselClick}
-            >
+          <div className="w-full aspect-[16/9] rounded-lg overflow-hidden">
             <Caraousel
               slides={carouselSlides}
               interval={3000}
               width='100%'
-              height='100%'
-              // onClick= {() => navigate('/movie_dets')}
+              height='200px'
             />
           </div>
         </div>
@@ -133,6 +137,7 @@ const HomePage = () => {
               cardsData={nowPlayingCards}
               cardWidth="140px"
               cardHeight="200px"
+              onClick={(index: number) => handleCardClick(nowPlayingCards[index].card_id)}
             />
           </div>
         </div>
@@ -147,6 +152,7 @@ const HomePage = () => {
               cardsData={comingSoonCards}
               cardWidth="140px"
               cardHeight="200px"
+              onClick={(index: number) => handleCardClick(comingSoonCards[index].card_id)}
             />
           </div>
         </div>

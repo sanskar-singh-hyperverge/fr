@@ -1,31 +1,46 @@
 import React from 'react';
 import { Button, TicketCard } from 'movie-design-hv';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-interface TicketInfoProps {
+interface TicketDetails {
+  bookingId: string;
   movieName: string;
-  ticketCount: number;
-  ticketPrice: number;
-  sessionTime: string;
-  seatNumbers: string;
-  buffetProducts?: string;
-  buffetPrice?: number;
-  movieTheater: string;
-  isPaymentSuccess?: boolean;
+  theater: string;
+  seats: string[];
+  showTime: {
+    start: string;
+    end: string;
+  };
+  totalAmount: number;
+  ticketCount: {
+    adult: number;
+    child: number;
+  };
 }
 
 const TicketSuccessPage = () => {
   const navigate = useNavigate();
-  const ticketInfo = {
-    movieName: "Kung Fu Panda 4",
-    ticketCount: 2,
-    ticketPrice: 40,
-    sessionTime: "20:30 pm - 22:00 pm",
-    seatNumbers: ["C3, C4"],
-    buffetProducts: "None",
-    buffetPrice: 0,
-    movieTheater: "Cinema Village",
-    isPaymentSuccess: true
+  const location = useLocation();
+  const ticketDetails = location.state as TicketDetails;
+
+  if (!ticketDetails) {
+    navigate('/home');
+    return null;
+  }
+
+  const formatTime = (timeString: string) => {
+    return new Date(timeString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).toLowerCase();
+  };
+
+  const formatTicketCount = (adult: number, child: number) => {
+    const parts = [];
+    if (adult > 0) parts.push(`${adult} Adult${adult > 1 ? 's' : ''}`);
+    if (child > 0) parts.push(`${child} Child${child > 1 ? 'ren' : ''}`);
+    return parts.join(', ');
   };
 
   return (
@@ -50,14 +65,17 @@ const TicketSuccessPage = () => {
 
       <div className="mb-8">
         <TicketCard 
-          movieName="Kung Fu Panda 4"
-          ticketCount="2"
-          ticketPrice={40}
-          sessionTime="20:30 pm - 22:00 pm"
-          seatNumbers={["c3", "c4"]}
+          movieName={ticketDetails.movieName}
+          ticketCount={formatTicketCount(
+            ticketDetails.ticketCount.adult,
+            ticketDetails.ticketCount.child
+          )}
+          ticketPrice={ticketDetails.totalAmount}
+          sessionTime={`${formatTime(ticketDetails.showTime.start)} - ${formatTime(ticketDetails.showTime.end)}`}
+          seatNumbers={ticketDetails.seats}
           buffetProducts="None"
           buffetPrice={0}
-          movieTheater="Cinema Village"
+          movieTheater={ticketDetails.theater}
           isPaymentSuccess={true}
         />
       </div>

@@ -40,11 +40,11 @@ function App() {
               element = {<HomePage/>}>
             </Route>
             <Route 
-              path='/ticket_details' 
+              path='/ticket_details/:id' 
               element = {<BookingPage />}>
             </Route>
             <Route 
-              path='/movie_dets' 
+              path='/movie/:id'
               element = {<MovieDetailPage />}>
             </Route>
             <Route 
@@ -52,7 +52,7 @@ function App() {
               element = {<MenuPage/>}>
             </Route>
             <Route 
-              path='/buy_ticket'
+              path='/buy_ticket/:id'
               element = {<CheckoutPage/>}>
             </Route>
             <Route 

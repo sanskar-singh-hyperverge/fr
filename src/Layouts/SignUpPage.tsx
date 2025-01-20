@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
 import { Input, Button, HomeHero } from 'movie-design-hv';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignIn = () => {
-    navigate('/verification');
+  const handleSignUp = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:3005/api/auth/signup', {
+        email,
+        password,
+      });
+
+      if (response.status === 201) {
+        localStorage.setItem('signupEmail', email);
+        alert('Sign-up successful! Please verify your email.');
+        navigate('/verification');
+      }
+    } catch (error) {
+      console.error('Error signing up:');
+      alert('Failed to sign up. Try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSignUp = () => {
+  const handleSignIn = () => {
     navigate('/sign_in');
   };
 
   return (
     <div className="relative w-full h-[850px] max-w-[400px] mx-auto overflow-hidden">
-      {/* Background with HomeHero */}
       <div className="absolute inset-0">
         <HomeHero 
           logoClassName="h-12"
@@ -29,16 +47,12 @@ const SignUpPage: React.FC = () => {
         />
       </div>
 
-      {/* Content Container */}
       <div className="relative z-20 w-full h-full flex flex-col px-8">
-        {/* Header */}
         <div className="text-gray-400 text-lg pt-6 pb-4">
-          sign Up
+          Sign Up
         </div>
 
-        {/* Form Container */}
-        <div className="relative z-10 flex flex-col items-center pt-64 mt-40"> {/* Adjusted padding-top */}
-          {/* Form */}
+        <div className="relative flex flex-col items-center pt-64 mt-44">
           <div className="w-full space-y-6">
             <Input
               type="email"
@@ -47,7 +61,6 @@ const SignUpPage: React.FC = () => {
               onChange={(value) => setEmail(value)}
               required
               className="w-full bg-gray-800/50 border-0 rounded-lg h-12 text-white placeholder-gray-500"
-              // wrapperClassName="w-full"
             />
 
             <Input
@@ -57,23 +70,22 @@ const SignUpPage: React.FC = () => {
               onChange={(value) => setPassword(value)}
               required
               className="w-full bg-gray-800/50 border-0 rounded-lg h-12 text-white placeholder-gray-500"
-              // wrapperClassName="w-full"
             />
 
             <Button
-              label="Sign Up"
+              label={loading ? "Signing Up..." : "Sign Up"}
               type="primary"
               size="large"
-              onClick={handleSignIn}
+              onClick={handleSignUp}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white h-12 rounded-lg mt-8"
             />
           </div>
 
           <div className="text-center mt-12">
             <p className="text-gray-400">
-              Don't you have an account?{' '}
+              Already have an account?{' '}
               <button
-                onClick={handleSignUp}
+                onClick={handleSignIn}
                 className="text-purple-500 hover:text-purple-400 font-medium"
               >
                 Sign In

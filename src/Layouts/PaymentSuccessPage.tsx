@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stepper, Button } from 'movie-design-hv';
 import { Check } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+interface PaymentSuccessState {
+  bookingId: string;
+  movieName: string;
+  theater: string;
+  seats: string[];
+  showTime: {
+    start: string;
+    end: string;
+  };
+  totalAmount: number;
+  ticketCount: {
+    adult: number;
+    child: number;
+  };
+}
 const PaymentSuccessPage = () => {
-  const ticketPatternImage = '/pay_suc_bg.png';
   const navigate = useNavigate();
+  const location = useLocation();
+  const bookingDetails = location.state as PaymentSuccessState;
+
+  useEffect(() => {
+    if (!bookingDetails) {
+      navigate('/home');
+    }
+  }, [bookingDetails, navigate]);
+
+  if (!bookingDetails) return null;
 
   return (
     <div className="min-h-screen bg-black relative flex flex-col">
@@ -49,14 +73,14 @@ const PaymentSuccessPage = () => {
 
           {/* Action Buttons */}
           <div className="w-full space-y-4 max-w-md">
-            <Button
-              label="View Ticket"
-              type="primary"
-              size="large"
-              className="w-full h-14 bg-indigo-600 hover:bg-indigo-700"
-              btnTextClassName="text-lg"
-              onClick={() => navigate('/success')}
-            />
+          <Button
+            label="View Ticket"
+            type="primary"
+            size="large"
+            className="w-full h-14 bg-indigo-600 hover:bg-indigo-700"
+            btnTextClassName="text-lg"
+            onClick={() => navigate('/success', { state: bookingDetails })}
+          />
             <Button
               label="Back to Home"
               type="secondary"
