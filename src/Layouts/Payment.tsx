@@ -52,7 +52,6 @@ const PaymentPage: React.FC = () => {
 
   const handlePayment = async () => {
     try {
-      // Confirm the booking
       const response = await axios.post('http://localhost:3004/api/bookings', {
         showId: paymentDetails.showId,
         seatIds: paymentDetails.seatIds,

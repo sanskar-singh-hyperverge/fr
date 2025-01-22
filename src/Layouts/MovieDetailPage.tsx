@@ -60,7 +60,7 @@ const MovieDetailPage = () => {
 
   const movieData = {
     title: movieDetails.title,
-    studio: "Studio", // You might want to add this to your API
+    studio: "Studio",
     rating: movieDetails.imdb_rating,
     userRating: movieDetails.app_rating,
     videoUrl: "/videoplayback.mp4",

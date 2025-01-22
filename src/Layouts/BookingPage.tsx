@@ -50,7 +50,6 @@ const BookingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // If no showDetails, redirect back
     if (!showDetails) {
       navigate(-1);
       return;
@@ -66,7 +65,6 @@ const BookingPage: React.FC = () => {
         
         setSeatLayout(response.data.data.layout);
 
-        // Create seat ID mapping and transform seats data
         const idMapping: Record<string, string> = {};
         const transformedSeats = response.data.data.seats.reduce((acc, seat) => {
           acc[seat.number] = seat.status === 'AVAILABLE' ? 'available' : 'booked';
@@ -125,18 +123,15 @@ const BookingPage: React.FC = () => {
         const statusResponse = await axios.get(`http://localhost:3004/api/bookings/lock/${jobId}`);
         console.log('Job status:', statusResponse.data);
   
-        // If we have a success or failure result, return it
         if (statusResponse.data.success === true) return true;
         if (statusResponse.data.success === false) return false;
   
-        // If job is still active, wait and retry
         if (statusResponse.data.state === 'active') {
           await new Promise(resolve => setTimeout(resolve, interval));
           retries++;
           continue;
         }
   
-        // If we get any other state, consider it a failure
         return false;
       } catch (error) {
         console.error('Error checking job status:', error);
@@ -145,7 +140,6 @@ const BookingPage: React.FC = () => {
       }
     }
   
-    // If we exhausted all retries, return false
     return false;
   };
   
@@ -157,10 +151,8 @@ const BookingPage: React.FC = () => {
         isChildArray[i] = true;
       }
   
-      // Start loading state
       setIsLoading(true);
   
-      // Lock the seats first
       const lockResponse = await axios.post('http://localhost:3004/api/bookings/lock', {
         showId,
         seatIds: selectedSeatIds,
@@ -172,11 +164,9 @@ const BookingPage: React.FC = () => {
         throw new Error('No job ID received');
       }
   
-      // Check the job status with retries
       const isSuccess = await checkJobStatus(lockResponse.data.jobId);
   
       if (isSuccess) {
-        // Navigate to payment page with all necessary details
         navigate('/payment', {
           state: {
             showId,
@@ -197,7 +187,6 @@ const BookingPage: React.FC = () => {
       console.error('Error locking seats:', error);
       alert("Error locking seats. Please try again.");
     } finally {
-      // End loading state
       setIsLoading(false);
     }
   };
@@ -232,12 +221,10 @@ const BookingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Screen SVG */}
       <div className="mt-4 text-center">
         <p className="mb-2">Screen</p>
         <div className="mx-4 relative">
           <svg viewBox="0 0 400 40" className="w-full h-10" preserveAspectRatio="none">
-            {/* ... Screen SVG content ... */}
           </svg>
         </div>
       </div>

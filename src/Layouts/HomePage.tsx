@@ -76,25 +76,22 @@ const HomePage = () => {
     navigate(`/movie/${movieId}`);
   };
 
-  // Transform API data for carousel
   const carouselSlides: CarouselSlide[] = highlightMovies.map(movie => ({
-    image: "/image_shifu.png", // Keep placeholder image
+    image: "/casino.webp",
     title: movie.title,
     description: truncateText(movie.description),
     onClick: () => handleMovieClick(movie.id)
   }));
 
-  // Transform API data for now showing cards
   const nowPlayingCards: CardData[] = nowShowingMovies.map(movie => ({
-    image: "/images.jpg", // Keep placeholder image
+    image: "/images_1.webp",
     title: movie.title,
     description: truncateText(movie.description),
     card_id: movie.id
   }));
 
-  // Transform API data for upcoming cards
   const comingSoonCards: CardData[] = upcomingMovies.map(movie => ({
-    image: "https://picsum.photos/300/400", // Keep placeholder image
+    image: "/images_1.webp",
     title: movie.title,
     description: truncateText(movie.description),
     card_id: movie.id

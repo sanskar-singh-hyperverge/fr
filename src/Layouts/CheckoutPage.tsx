@@ -37,18 +37,15 @@ const CheckoutPage: React.FC = () => {
   const [selectedShow, setSelectedShow] = useState<Show | null>(null);
   const [movieDetails, setMovieDetails] = useState<any>(null);
 
-  // Generate display strings for theaters
   const theaterOptions = theaters.map(theater => 
     `${theater.name} - ${theater.location}`
   );
 
-  // Create a map for looking up theater IDs
   const theaterMap = theaters.reduce((acc, theater) => {
     acc[`${theater.name} - ${theater.location}`] = theater.id;
     return acc;
   }, {} as Record<string, string>);
 
-  // Generate display strings for shows
   const showOptions = shows.map(show => {
     const startDate = new Date(show.start_time);
     return `${startDate.toLocaleDateString('en-US', { 
@@ -61,7 +58,6 @@ const CheckoutPage: React.FC = () => {
     })}`;
   });
 
-  // Create a map for looking up show IDs
   const showMap = shows.reduce((acc, show) => {
     const startDate = new Date(show.start_time);
     const displayString = `${startDate.toLocaleDateString('en-US', { 
@@ -76,7 +72,6 @@ const CheckoutPage: React.FC = () => {
     return acc;
   }, {} as Record<string, string>);
 
-  // Fetch theaters for the movie
   useEffect(() => {
     const fetchTheaters = async () => {
       try {
@@ -102,7 +97,6 @@ const CheckoutPage: React.FC = () => {
     }
   }, [id]);
 
-  // Fetch shows when theater is selected
   useEffect(() => {
     const fetchShows = async () => {
       try {

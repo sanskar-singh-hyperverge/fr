@@ -7,8 +7,6 @@ const VerificationPage: React.FC = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-
-  // Get email stored in localStorage from SignUp step
   const email = localStorage.getItem('signupEmail') || '';
 
   const handleVerification = async () => {

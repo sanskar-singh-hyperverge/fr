@@ -1,6 +1,5 @@
 import {BrowserRouter as Router, Route,Routes, BrowserRouter} from 'react-router-dom';
 import IndexPage from './Layouts/IndexPage';
-import './App.css';
 import BookingPage from './Layouts/BookingPage';
 import MenuPage from './Layouts/MenuPage';
 import CheckoutPage from './Layouts/CheckoutPage';
@@ -13,8 +12,19 @@ import PaymentPage from './Layouts/Payment';
 import PaymentFailedPage from './Layouts/PaymentFailedPage';
 import TicketSuccessPage from './Layouts/TicketSuccessPage';
 import PaymentSuccessPage from './Layouts/PaymentSuccessPage';
+import { useEffect } from 'react';
 
 function App() {
+
+  useEffect(() => {
+    if ('Notification' in window) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+        }
+      });
+    }
+  }, []);
   return (
     <div className="App">
        <BrowserRouter>
@@ -72,6 +82,7 @@ function App() {
               element = {<TicketSuccessPage/>}>
             </Route>
           </Routes>
+          <button id="install-btn">Install App</button>
        </BrowserRouter>
     </div>
   );

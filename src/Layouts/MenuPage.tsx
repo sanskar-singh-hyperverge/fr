@@ -71,7 +71,6 @@ const MenuPage: React.FC = () => {
     <div className="flex flex-col h-screen bg-black">
       <div className="flex-1 overflow-y-auto pb-32">
         <div className="p-6 space-y-4">
-          {/* Regular Menus */}
           <div className="space-y-4">
             {menuItems.slice(0, 3).map((item) => (
               <BuffetCard
